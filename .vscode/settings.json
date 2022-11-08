@@ -1,0 +1,8 @@
+{
+    "python.analysis.extraPaths": [
+        "./game",
+        "./credit",
+        "./game",
+        "./scoreboard"
+    ]
+}
