@@ -34,9 +34,9 @@ class Kert():
 
         
         
-    def get(self, sor:int,oszlop:int):
+    def get(self, sor:int,oszlop:int)->pygame.sprite.Sprite:
         """
-        Kikeresi a kert adott elemét
+        Kikeresi a kert adott mezőjét
         """
         try: return  self.sheet[sor][oszlop]
         except: return None
@@ -58,6 +58,10 @@ class Kert():
                 px += 140 + space
             px = self.x
             py += 140 + space
+
+    def hover(self,pos:tuple,loc:tuple):
+        if pos[0] < self.get(loc[0],loc[1]).rect.left or pos[0] > self.get(loc[0],loc[1]).rect.right or pos[1] < self.get(loc[0],loc[1]).rect.top or pos[1] > self.get(loc[0],loc[1]).rect.bottom: return False
+        return True
       
 class Parcella(pygame.sprite.Sprite):
     def __init__(self, path,id) -> None:
@@ -69,6 +73,8 @@ class Parcella(pygame.sprite.Sprite):
 
         try: self.image = pygame.image.load(path)
         except: self.image = pygame.draw.rect(self.image, (255,0,255), [0,0,30,30])
+
+        self.planted = 0
 
         self.rect = self.image.get_rect()
 

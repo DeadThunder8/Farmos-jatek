@@ -6,6 +6,7 @@ class Novenyinit():
     def __init__(self,id:str,sheet:list) -> None:
         self.id = id
         self.act = 0 #max->5
+        self.dragged = False
 
         self.map = (
         Allapot(sheet[0]),
@@ -22,6 +23,10 @@ class Novenyinit():
 
     def move(self,pos:tuple):
         self.get().rect.center = pos
+
+    def drag(self,pos):
+        if self.dragged:
+            self.move(pos)
     
     def set(self,index:int):
         groups = self.get().groups()
@@ -33,6 +38,12 @@ class Novenyinit():
         for x in groups:
             x.add(self.get())
         self.get().rect.center = pos
+    
+    def place():pass
+
+    def hover(self,pos:tuple):
+        if pos[0] < self.get().rect.left or pos[0] > self.get().rect.right or pos[1] < self.get().rect.top or pos[1] > self.get().rect.bottom: return False
+        return True
         
         
 
