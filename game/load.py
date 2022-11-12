@@ -1,4 +1,5 @@
 import pygame
+import plantloader
 
 WHITE = (255,255,255)
 
@@ -40,7 +41,14 @@ class Kert():
         """
         try: return  self.sheet[sor][oszlop]
         except: return None
-    
+
+    def cellakeres(self, pos):
+        for x in range(len(self.sheet)):
+            for y in range(len(self.sheet[x])):
+                if self.hover(pos, (x,y)):
+                    return (x,y)
+        return None
+
     def addall(self, group:pygame.sprite.Group):
         for x in self.sheet:
             for y in x:
@@ -71,12 +79,19 @@ class Parcella(pygame.sprite.Sprite):
         self.image.fill((255,255,255))
         self.image.set_colorkey((255,255,255))
 
+        self.noveny = None
+
         try: self.image = pygame.image.load(path)
         except: self.image = pygame.draw.rect(self.image, (255,0,255), [0,0,30,30])
 
         self.planted = 0
 
         self.rect = self.image.get_rect()
+    
+    def ultet(self, noveny:plantloader.Novenyinit):
+        if type(noveny) not in [plantloader.Repa,plantloader.Buza,plantloader.Retek,plantloader.Kukorica,plantloader.Paradicsom]: return None
+        if self.noveny != None:return None
+        self.noveny = noveny
 
 #Panelek
 
@@ -121,5 +136,45 @@ class Boltpanel(pygame.sprite.Sprite):
 
         self.rect.right = 1000
         self.rect.centery = 300
+
+class Boltbutton(pygame.sprite.Sprite):
+    def __init__(self, typex:str, loc:tuple):
+        super().__init__()
+        self.type = typex
+
+        self.image = pygame.Surface([0,0])
+        self.image.fill(WHITE)
+        self.image.set_colorkey(WHITE)
+
+        if type(typex) != str: raise TypeError()
+
+        if typex == 'paradicsom':
+            self.image = pygame.image.load('./game/img/novenyek/icons/paradicsom.png')
+        elif typex == 'repa':
+            self.image = pygame.image.load('./game/img/novenyek/icons/repa.png')
+        elif typex == 'buza':
+            self.image = pygame.image.load('./game/img/novenyek/icons/buza.png')
+        elif typex == 'retek':
+            self.image = pygame.image.load('./game/img/novenyek/icons/retek.png')
+        elif typex == 'kukorica':
+            self.image = pygame.image.load('./game/img/novenyek/icons/kukorica.png')
+        else: raise ValueError('A megadott tipus nincs az adatbázisban')
+
+        self.rect = self.image.get_rect()
+
+        self.rect.x = loc[0]
+        self.rect.y = loc[1]
+
+    def replace(self,loc:tuple):
+        self.rect.x = loc[0]
+        self.rect.y = loc[1]
+
+    def hover(self, mouse:tuple):
+        if mouse[0] > self.rect.right or mouse[0] < self.rect.left: return False
+        if mouse[1] < self.rect.top or mouse[1] > self.rect.bottom: return False
+        return True
+
+    
+
 
 

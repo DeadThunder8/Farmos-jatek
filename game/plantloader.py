@@ -38,8 +38,6 @@ class Novenyinit():
         for x in groups:
             x.add(self.get())
         self.get().rect.center = pos
-    
-    def place():pass
 
     def hover(self,pos:tuple):
         if pos[0] < self.get().rect.left or pos[0] > self.get().rect.right or pos[1] < self.get().rect.top or pos[1] > self.get().rect.bottom: return False

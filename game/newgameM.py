@@ -1,5 +1,9 @@
 import pygame
 
+
+"""
+Ebből a modulból fog megnyílni a játék, de mivel a tesztelés egy menüablakkal könnyebb, ezért jelenleg nem tartalmazza a program.
+"""
 def main(display:pygame.Surface,clock:pygame.time.Clock):
     isMain = True
     while isMain:
