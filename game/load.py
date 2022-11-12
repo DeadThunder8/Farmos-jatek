@@ -43,7 +43,6 @@ class Parcella(pygame.sprite.Sprite):
         if self.noveny != None:return None
         self.noveny = noveny
         self.noveny.move(self.rect.center)
-        print('Elültettem ide egy növényt')
 
 class Kert():
     def __init__(self,sor:int,oszlop:int) -> None:
@@ -80,6 +79,13 @@ class Kert():
         """
         try: return  self.sheet[sor][oszlop]
         except: return None
+
+    def getAllNoveny(self)->list[plantloader.Novenyinit]:
+        ki = []
+        for x in range(len(self.sheet)):
+            for y in range(len(self.sheet[x])):
+                ki.append(self.sheet[x][y].noveny)
+        return ki
 
     def cellakeres(self, pos):
         for x in range(len(self.sheet)):

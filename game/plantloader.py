@@ -8,6 +8,12 @@ class Novenyinit():
         self.act = 0 #max->5
         self.dragged = False
 
+        self.time = pygame.time.get_ticks()
+        self.growinterval = None #ms
+
+        self.water = None #kell-e öntözni a növénykét
+        self.locsolva = False #lett e locsolva
+
         self.map = (
         Allapot(sheet[0]),
         Allapot(sheet[1]),
@@ -16,6 +22,13 @@ class Novenyinit():
         Allapot(sheet[4]),
         Allapot(sheet[5])
         )
+
+    def grow(self):
+        if self.act < 5:
+            pos = self.get().rect.center
+            self.act += 1
+            self.set(self.act)
+            self.move(pos)
 
     def get(self)->pygame.sprite.Sprite: 
         if self.act > 5: return None
@@ -30,14 +43,14 @@ class Novenyinit():
     
     def set(self,index:int):
         groups = self.get().groups()
-        self.get().kill()
-
         pos = self.get().rect.center
+
+        self.get().kill()
         
         self.act = index
         for x in groups:
             x.add(self.get())
-        self.get().rect.center = pos
+        self.move(pos)
 
     def hover(self,pos:tuple):
         if pos[0] < self.get().rect.left or pos[0] > self.get().rect.right or pos[1] < self.get().rect.top or pos[1] > self.get().rect.bottom: return False
