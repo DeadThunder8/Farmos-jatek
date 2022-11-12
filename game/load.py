@@ -21,6 +21,30 @@ class BackGround(pygame.sprite.Sprite):
 
 
 #Kert, parcellák
+class Parcella(pygame.sprite.Sprite):
+    def __init__(self, path,id) -> None:
+        super().__init__()
+        self.id = id
+        self.image = pygame.Surface([0,0])
+        self.image.fill((255,255,255))
+        self.image.set_colorkey((255,255,255))
+
+        self.noveny = None
+
+        try: self.image = pygame.image.load(path)
+        except: self.image = pygame.draw.rect(self.image, (255,0,255), [0,0,30,30])
+
+        self.planted = 0
+
+        self.rect = self.image.get_rect()
+    
+    def ultet(self, noveny:plantloader.Novenyinit):
+        if type(noveny) not in [plantloader.Repa,plantloader.Buza,plantloader.Retek,plantloader.Kukorica,plantloader.Paradicsom]: return None
+        if self.noveny != None:return None
+        self.noveny = noveny
+        self.noveny.move(self.rect.center)
+        print('Elültettem ide egy növényt')
+
 class Kert():
     def __init__(self,sor:int,oszlop:int) -> None:
         self.sheet = []
@@ -33,9 +57,24 @@ class Kert():
             for y in range(oszlop):
                 self.sheet[x].append(Parcella('./game/img/fold.png',(x,y)))
 
+
+    def update(self, group:pygame.sprite.Group):
+        """
+        felfrissíti a kert alá rendelt grafikus elemeket
+        """
+        group.empty()
+
+        for x in range(len(self.sheet)):
+            for y in range(len(self.sheet[x])):
+                if self.getnoveny((x,y)) == None: continue
+                self.getnoveny((x,y)).get().add(group)
+                
         
+    def getnoveny(self, cord)->plantloader.Novenyinit:
+        return self.get(cord[0],cord[1]).noveny
+
         
-    def get(self, sor:int,oszlop:int)->pygame.sprite.Sprite:
+    def get(self, sor:int,oszlop:int)->Parcella:
         """
         Kikeresi a kert adott mezőjét
         """
@@ -71,27 +110,6 @@ class Kert():
         if pos[0] < self.get(loc[0],loc[1]).rect.left or pos[0] > self.get(loc[0],loc[1]).rect.right or pos[1] < self.get(loc[0],loc[1]).rect.top or pos[1] > self.get(loc[0],loc[1]).rect.bottom: return False
         return True
       
-class Parcella(pygame.sprite.Sprite):
-    def __init__(self, path,id) -> None:
-        super().__init__()
-        self.id = id
-        self.image = pygame.Surface([0,0])
-        self.image.fill((255,255,255))
-        self.image.set_colorkey((255,255,255))
-
-        self.noveny = None
-
-        try: self.image = pygame.image.load(path)
-        except: self.image = pygame.draw.rect(self.image, (255,0,255), [0,0,30,30])
-
-        self.planted = 0
-
-        self.rect = self.image.get_rect()
-    
-    def ultet(self, noveny:plantloader.Novenyinit):
-        if type(noveny) not in [plantloader.Repa,plantloader.Buza,plantloader.Retek,plantloader.Kukorica,plantloader.Paradicsom]: return None
-        if self.noveny != None:return None
-        self.noveny = noveny
 
 #Panelek
 

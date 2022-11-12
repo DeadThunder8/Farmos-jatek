@@ -16,6 +16,9 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
     #bolt feletti megjelenítő szint
     belemek = pygame.sprite.Group()
 
+    #Növény megjelenítő szint
+    novenykek = pygame.sprite.Group()
+
     #felső megjelenítőszint
     cover = pygame.sprite.Group()
 
@@ -62,6 +65,7 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
         display.fill((0,0,0))
         render.update()
         belemek.update()
+        novenykek.update()
         bgdisplay.update()
         bgdisplay.draw(display)
 
@@ -78,7 +82,7 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
 
         for ev in event:
             if ev.type == pygame.MOUSEBUTTONDOWN and ev.button == 1:
-                
+
                 #répa
                 if brep.hover(mouse):
                     active = plantloader.Repa('repa')
@@ -106,34 +110,48 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
                     active.dragged = 1
 
             if ev.type == pygame.MOUSEBUTTONUP and ev.button == 1:
+                if type(active) == plantloader.Kukorica:
+                    active.dragged == 0
+                    active.get().kill()
+                    buy(mezokeres(active.get().rect.center,kert),active,kert)
+                    active = None
+
                 if type(active)==plantloader.Paradicsom:
                     active.dragged = 0
                     active.get().kill()
-                    buy('paradicsom',mezokeres(active.get().rect.center,kert))
+                    buy(mezokeres(active.get().rect.center,kert),active,kert)
+                    active = None
 
-                if type(active)==plantloader.Buza():
+                if type(active)==plantloader.Buza:
                     active.dragged == 0
                     active.get().kill()
-                    buy('buza',mezokeres(active.get().rect.center,kert))
+                    buy(mezokeres(active.get().rect.center,kert),active,kert)
+                    active = None
 
                 if type(active)==plantloader.Repa:
                     active.dragged = 0
                     active.get().kill()
-                    buy('repa',mezokeres(active.get().rect.center,kert))
+                    buy(mezokeres(active.get().rect.center,kert),active,kert)
+                    active = None
                 
                 if type(active)==plantloader.Retek:
                     active.dragged = 0
                     active.get().kill()
-                    buy('retek',mezokeres(active.get().rect.center,kert))
+                    buy(mezokeres(active.get().rect.center,kert),active,kert)
+                    active = None
 
-        
+        #aktív objektum egérhez való mozgatása
         try: 
             active.move(mouse)
         except:pass
 
+        #kert frissítése
+        kert.update(novenykek)
+
         #post
         render.draw(display)
         belemek.draw(display)
+        novenykek.draw(display)
         cover.draw(display)
 
         pygame.display.update()
@@ -143,13 +161,23 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
 def mezokeres(pos, kert:load.Kert):
     return kert.cellakeres(pos)
 
-def buy(ids:str, pos:tuple):
+def buy(pos:tuple[int, int],active:plantloader.Novenyinit,kert:load.Kert):
     if pos == None: 
-        cancelBuy()
         return
 
-def cancelBuy(exception = 0):
-    pass
+    parcella = kert.get(pos[0],pos[1])
+    tip = type(active)
+
+    if tip == plantloader.Repa:
+        parcella.ultet(plantloader.Repa('réépaaa'))
+    if tip == plantloader.Retek:
+        parcella.ultet(plantloader.Retek('reteeeeeeeek'))
+    if tip == plantloader.Buza:
+        parcella.ultet(plantloader.Buza('búúúzaá'))
+    if tip == plantloader.Kukorica:
+        parcella.ultet(plantloader.Kukorica('kukii'))
+    if tip == plantloader.Paradicsom:
+        parcella.ultet(plantloader.Paradicsom('nagy piros izé'))
 
 def placeBuy():
     pass
