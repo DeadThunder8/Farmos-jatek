@@ -38,5 +38,17 @@ class Khanna(pygame.sprite.Sprite):
     def move(self,pos:tuple):
         self.rect.center = pos
 
+class Kapa(pygame.sprite.Sprite):
+    def __init__(self) -> None:
+        super().__init__()
+
+        self.image = pygame.Surface([60,60])
+        self.image.fill((255,255,255))
+        self.image.set_colorkey((255,255,255))
+
+        self.image = pygame.image.load('./game/img/eszkozok/kapa.png')
+
+        self.rect = self.image.get_rect
+
     
 
