@@ -64,6 +64,13 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
     kanna.rect.x = epanel.rect.x + 5
     kanna.rect.y = epanel.rect.y + 5
     kanna.helymentes()
+
+    #kapa
+    kapa = eszkozok.Kapa()
+    kapa.add(cover)
+    kapa.rect.x = epanel.rect.x + 70
+    kapa.rect.y = epanel.rect.y + 5
+    kapa.helymentes()
     
 
     active = None
@@ -153,6 +160,14 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
                     buy(mezokeres(active.get().rect.center,kert),active,kert)
                     active = None
 
+        #kikapálás
+        for ev in event:
+            if ev.type == pygame.MOUSEBUTTONDOWN and kapa.hover(mouse) and ev.button == 1:
+                active = kapa
+            if ev.type == pygame.MOUSEBUTTONUP and active == kapa and ev.button == 1:
+                kapal(mezokeres(kapa.rect.center,kert),kert)
+                kapa.visszateres()
+                active = None
         #locsolást lebonyolító rész
         for ev in event:
             #kanna kijelölése
@@ -187,8 +202,7 @@ def mezokeres(pos, kert:load.Kert):
     return kert.cellakeres(pos)
 
 def buy(pos:tuple[int, int],active:plantloader.Novenyinit,kert:load.Kert):
-    if pos == None: 
-        return
+    if pos == None:return
 
     parcella = kert.get(pos[0],pos[1])
     tip = type(active)
@@ -200,7 +214,7 @@ def buy(pos:tuple[int, int],active:plantloader.Novenyinit,kert:load.Kert):
     if tip == plantloader.Buza:
         parcella.ultet(plantloader.Buza('búúúzaá'))
     if tip == plantloader.Kukorica:
-        parcella.ultet(plantloader.Kukorica('kukii'))
+        parcella.ultet(plantloader.Kukorica('kukoric'))
     if tip == plantloader.Paradicsom:
         parcella.ultet(plantloader.Paradicsom('nagy piros izé'))
 
@@ -288,9 +302,13 @@ def vizcsepp(obj:plantloader.Novenyinit, group:pygame.sprite.Group):
     group.add(csepp)
 
 def locsol(pos:tuple,kert:load.Kert):
+    if pos == None: return
+    if kert.get(pos[0],pos[1]).noveny == None: return
     if kert.get(pos[0],pos[1]).noveny.water == True: 
         kert.get(pos[0],pos[1]).noveny.water = False
         kert.get(pos[0],pos[1]).noveny.locsolva = True
 
-        
-
+def kapal(pos:tuple,kert:load.Kert):
+    if pos == None: return
+    kert.get(pos[0],pos[1]).noveny = None
+    

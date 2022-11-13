@@ -40,6 +40,9 @@ def main():
     exitbutton = button.MenuButton(['./mainIMG/exit.png',250,50],['./mainIMG/exitHover.png',250,50])
     render.add(exitbutton.get())
     exitbutton.move((40,510))
+
+    #background
+    bg = pygame.image.load('./mainIMG/bg.png')
    
 
     #gameloop
@@ -52,6 +55,8 @@ def main():
 
         mouse = pygame.mouse.get_pos()
         screen.fill((0,0,0))
+
+        screen.blit(bg,(0,0))
 
         #input
         for x in [newGame,scoreboard,credit,exitbutton]:
