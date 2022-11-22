@@ -127,5 +127,6 @@ class Allapot(pygame.sprite.Sprite):
         self.image.set_colorkey(KEY)
 
         self.image = pygame.image.load(path)
+        #self.image.set_colorkey((204,204,204))
 
         self.rect = self.image.get_rect()

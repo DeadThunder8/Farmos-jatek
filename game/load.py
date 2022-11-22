@@ -143,7 +143,7 @@ class Eszkozpanel(pygame.sprite.Sprite):
         self.image = pygame.image.load(path)
         self.rect = self.image.get_rect()
 
-        self.rect.right = 1000
+        self.rect.right = 1040
         self.rect.bottom = 600
 
 class Boltpanel(pygame.sprite.Sprite):
@@ -198,7 +198,14 @@ class Boltbutton(pygame.sprite.Sprite):
         if mouse[1] < self.rect.top or mouse[1] > self.rect.bottom: return False
         return True
 
-    
+class Text():
+    def __init__(self, text:str) -> None:
+        font = pygame.font.SysFont('Calibri', 72, True)
+        self.text = font.render(text, True, (10,10,10))
+
+        self.rect = self.text.get_rect()
+
+
 
 
 

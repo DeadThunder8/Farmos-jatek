@@ -6,6 +6,7 @@ class Vizcsepp(pygame.sprite.Sprite):
         super().__init__()
 
         self.image = pygame.image.load('./game/img/eszkozok/vizjel.png')
+        self.image.set_colorkey((204,204,204))
 
         self.rect = self.image.get_rect()
 
@@ -64,5 +65,35 @@ class Kapa(pygame.sprite.Sprite):
     def move(self,pos:tuple):
         self.rect.center = pos
 
-    
+class Nyeso(pygame.sprite.Sprite):
+    def __init__(self) -> None:
+        super().__init__()  
+        self.image = pygame.Surface([60,60])
+        self.image.fill((255,0,255))
+        self.image.set_colorkey((255,0,255))
 
+        self.image = pygame.image.load('./game/img/eszkozok/sarlo.png')
+
+        self.rect = self.image.get_rect()
+    
+    def hover(self,pos:tuple[int,int])->bool:
+        if pos[0] < self.rect.left or pos[0] > self.rect.right or pos[1] < self.rect.top or pos[1] > self.rect.bottom: return False
+        return True
+
+    def helymentes(self):
+        self.mpos = (self.rect.x,self.rect.y)
+
+    def visszateres(self):
+        self.rect.x = self.mpos[0]
+        self.rect.y = self.mpos[1]
+
+    def move(self,pos:tuple):
+        self.rect.center = pos
+
+class Aratojel(pygame.sprite.Sprite):
+    def __init__(self) -> None:
+        super().__init__()
+        self.image = pygame.image.load('./game/img/eszkozok/aratojel.png')
+        self.image.set_colorkey((204,204,204))
+
+        self.rect = self.image.get_rect()
