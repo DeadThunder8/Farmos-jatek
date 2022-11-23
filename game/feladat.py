@@ -6,17 +6,40 @@ import plantloader
 Megjelenítés
 """
 
-class Feladat(pygame.sprite.Sprite):
-    def __init__(self, inp:list[(str,int),(str,int),(str,int)], pont:int) -> None:
+class FeladatIkon(pygame.sprite.Sprite):
+    def __init__(self, typer:str) -> None:
         super().__init__()
-        self.image = pygame.image.load('./game/feladat/alap.png')
+        if typer == 'repa':
+            self.image = pygame.image.load('./game/feladat/repa.png')
+        elif typer == 'retek':
+            self.image = pygame.image.load('./game/feladat/retek.png')
+        elif typer == 'buza':
+            self.image = pygame.image.load('./game/feladat/buza.png')
+        elif typer == 'kukorica':
+            self.image = pygame.image.load('./game/feladat/kukorica.png')
+        elif typer == 'paradicsom':
+            self.image = pygame.image.load('./game/feladat/tomato.png')
+        else: raise ValueError('Érvénytelen gyümi...')
+
         self.rect = self.image.get_rect()
+
+    def move(self,pos:tuple[int,int]):
+        self.rect.x = pos[0]
+        self.rect.y = pos[1]
+
+
+
+class Feladat():
+    def __init__(self, inp:list[(str,int),(str,int),(str,int)], pont:int) -> None:
         self.score = pont
 
         self.map = inp
-        
-        
 
+        self.disply = []
+
+        for x in self.map:
+            self.disply.append(FeladatIkon(x[0]))
+          
     def __str__(self) -> str:
         ki = ''
         for x in self.map:
@@ -39,6 +62,27 @@ class Feladat(pygame.sprite.Sprite):
                 print(self.map)
         if self.map == []: return True
         return False 
+
+    def addAll(self, group:pygame.sprite.Group):
+        for x in self.disply:
+            group.add(x)
+    
+    def killAll(self):
+        for x in self.disply:
+            x.kill()
+
+    def elhelyez(self, boltpanel:pygame.sprite.Sprite):
+        pass
+
+
+    def eliminate(self, group:pygame.sprite.Group):
+        self.disply = []
+        for x in self.map:
+            self.disply.append(FeladatIkon(x[0]))
+        self.killAll()
+        self.addAll(group)
+        elhelyez()
+    
         
 """
 Generálás

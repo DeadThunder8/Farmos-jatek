@@ -23,7 +23,7 @@ class Timer():
         self.setOut()
 
     def timerSet(self, rem:int, globTime:int=0):
-        self.time = globTime//1000
+        self.time = globTime // 1000
         self.remaining = self.time + 30
 
         self.setOut()
@@ -55,6 +55,9 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
 
     #bolt feletti megjelenítő szint
     belemek = pygame.sprite.Group()
+
+    #feladat megjelenítő szint
+    felemek = pygame.sprite.Group()
 
     #Növény megjelenítő szint
     novenykek = pygame.sprite.Group()
@@ -121,8 +124,8 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
     #feladatok
     nehezseg = 1
     actfeladat = feladat.ujfeladat(nehezseg)
+    actfeladat.addAll(felemek)
     print(actfeladat)
-
 
     active = None
 
@@ -138,6 +141,7 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
         indexek.empty()
         render.update()
         belemek.update()
+        felemek.update()
         novenykek.update()
         bgdisplay.update()
         bgdisplay.draw(display)
@@ -242,7 +246,7 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
             if ev.type == pygame.MOUSEBUTTONDOWN and nyeso.hover(mouse) and ev.button == 1:
                 active = nyeso
             if ev.type == pygame.MOUSEBUTTONUP and active == nyeso and ev.button == 1:
-                arat(mezokeres(nyeso.rect.center,kert),kert,actfeladat)
+                if arat(mezokeres(nyeso.rect.center,kert),kert,actfeladat): actfeladat.eliminate(felemek)
                 nyeso.visszateres()
                 active = None
 
@@ -251,6 +255,7 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
             nehezseg += 1
             timer.add(30)
             actfeladat = feladat.ujfeladat(nehezseg)
+            actfeladat.eliminate(felemek)
             print('Új megbízás:')
             print(actfeladat.map)
 
@@ -266,6 +271,7 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
         #rajzolás szintenként
         render.draw(display)
         belemek.draw(display)
+        felemek.draw(display)
         novenykek.draw(display)
         indexek.draw(display)
         display.blit(timer.display.text, timer.display.rect)
