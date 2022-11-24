@@ -75,7 +75,7 @@ def main():
             #menü léptetés
             if ev.type == pygame.MOUSEBUTTONDOWN and ev.button == 1:
                 if newGame.hover(mouse):
-                    gameM.main(screen,clock)
+                    print(gameM.main(screen,clock))
                 if scoreboard.hover(mouse):
                     scoreboardM.main(screen,clock)
                 if credit.hover(mouse):

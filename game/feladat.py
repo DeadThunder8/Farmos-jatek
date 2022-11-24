@@ -1,6 +1,7 @@
 import pygame
 import random
 import plantloader
+import load
 
 """
 Megjelenítés
@@ -18,7 +19,7 @@ class FeladatIkon(pygame.sprite.Sprite):
         elif typer == 'kukorica':
             self.image = pygame.image.load('./game/feladat/kukorica.png')
         elif typer == 'paradicsom':
-            self.image = pygame.image.load('./game/feladat/tomato.png')
+            self.image = pygame.image.load('./game/feladat/paradicsom.png')
         else: raise ValueError('Érvénytelen gyümi...')
 
         self.rect = self.image.get_rect()
@@ -46,11 +47,15 @@ class Feladat():
             ki+=str(x)+'\n'
         return ki
 
-    def eladas(self, gyumi:str) -> bool:
+    def eladas(self, gyumi:str,pont) -> bool:
         for x in self.map:
             if x[0] == gyumi:
                 x[1]-=1
-                print(self.map)
+                if gyumi == 'repa': pont.add(1)
+                if gyumi == 'retek': pont.add(2)
+                if gyumi == 'buza': pont.add(3)
+                if gyumi == 'kukorica': pont.add(4)
+                if gyumi == 'paradicsom': pont.add(5)
                 return True
         
         return False
@@ -59,11 +64,11 @@ class Feladat():
         for x in self.map:
             if x[1]<=0:
                 self.map.pop(self.map.index(x))
-                print(self.map)
         if self.map == []: return True
         return False 
 
     def addAll(self, group:pygame.sprite.Group):
+        group.empty()
         for x in self.disply:
             group.add(x)
     
@@ -71,17 +76,28 @@ class Feladat():
         for x in self.disply:
             x.kill()
 
-    def elhelyez(self, boltpanel:pygame.sprite.Sprite):
-        pass
+    def elhelyez(self,group:pygame.sprite.Group,fpanel:load.Feladatpanel):
+        tk = 6
 
+        elemek = group.sprites()
+
+        sx = fpanel.rect.x + tk
+        sy = fpanel.rect.y + tk
+
+        for x in elemek:
+            x.move((sx,sy))
+            sx += 30 + tk
+            if sx >= fpanel.rect.x + tk + 4*(30+tk):
+                sx = sx = fpanel.rect.x + tk
+                sy += 30 + tk
 
     def eliminate(self, group:pygame.sprite.Group):
+        self.killAll()
         self.disply = []
         for x in self.map:
-            self.disply.append(FeladatIkon(x[0]))
-        self.killAll()
+            for _ in range(x[1]):
+                self.disply.append(FeladatIkon(x[0]))
         self.addAll(group)
-        elhelyez()
     
         
 """
@@ -90,21 +106,25 @@ Generálás
 
 def ujfeladat(nehezseg:int)->Feladat:
     """
-    bekéri egy nehézségi szintet
+    bekér egy nehézségi szintet
 
     létrehoz egy véletlenszerű feladatot, a nehézséget kielégítve
     """
     if nehezseg < 1 : raise ValueError('Ez a játék nem lehet 0 vagy kisebb nehézségű!')
-    if nehezseg > 30: nehezseg %= 30
+    if nehezseg > 110: 
+        nehezseg %= 110
+        if nehezseg < 70: nehezseg = 100
 
     helper = random.randint(0,10)
 
-    if helper >= 7 and nehezseg > 7: nehezseg = 3
+    if helper >= 7 and nehezseg > 7: nehezseg = 6
 
-    kovetelmeny = (1,2,3,4,5) #egyszerre termelendő zöldségek nehézségi sorrenben
+    print(nehezseg)
+
+    kovetelmeny = (1,2,3,4,5,6,7,8,9) #egyszerre termelendő zöldségek nehézségi sorrenben
     zoldsegek = ('repa','retek','buza','kukorica','paradicsom') #nehézségi sorrendben a zöldségek
     #               1      2      3        4            5
-    perdarabszam = (1,2,3,4,5,6) #egy termény mennyisége
+    perdarabszam = (1,2,3,4,5,6,7,8,9) #egy termény mennyisége
 
     actneh = 0 #a feladat jelenlegi nehézsége
 

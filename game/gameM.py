@@ -13,6 +13,9 @@ class Timer():
         self.time = 0
         self.remaining = 30
         self.display = load.Text(str(self.remaining-self.time))
+
+    def get(self):
+        return self.remaining - self.time
     
     def setOut(self):
         self.display = load.Text(str(self.remaining-self.time))
@@ -39,9 +42,30 @@ class Timer():
     def add(self, sec:int):
         self.remaining+=sec
         self.setOut()
+
+class Pontszam():
+    def __init__(self) -> None:
+        self.pont = 0
+        self.display = load.Text(str(self.pont))
+
+    def setOut(self): 
+        self.display = load.Text(str(self.pont))
+
+    def get(self):
+        return self.pont
+    
+    def add(self, ertek:int):
+        self.pont += ertek
+        self.setOut()
+
+    def move(self,pos:tuple[int,int]):
+        self.display.rect.x = pos[0]
+        self.display.rect.y = pos[1]
+        self.setOut()
         
 
 def main(display:pygame.Surface,clock:pygame.time.Clock):
+
 
     bg = load.BackGround('./game/img/bg.png')
     bgdisplay = pygame.sprite.Group()
@@ -49,6 +73,10 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
 
     #Időzítő létrehozása
     timer = Timer()
+
+    #pontszámláló
+    pont = Pontszam()
+    
     
     #alsó megjelenítőszint
     render = pygame.sprite.Group()
@@ -125,13 +153,13 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
     nehezseg = 1
     actfeladat = feladat.ujfeladat(nehezseg)
     actfeladat.addAll(felemek)
-    print(actfeladat)
 
     active = None
 
     isMain = True
     timer.timerSet(30,pygame.time.get_ticks())
     while isMain:
+        pont.display.rect.right = 1000
         mouse = pygame.mouse.get_pos()
         event = pygame.event.get()
         time = pygame.time.get_ticks()
@@ -161,7 +189,7 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
         # Vásárlást lebonyolító rész
 
         for ev in event:
-            if ev.type == pygame.MOUSEBUTTONDOWN and ev.button == 1:
+            if active == None and ev.type == pygame.MOUSEBUTTONDOWN and ev.button == 1:
 
                 #répa
                 if brep.hover(mouse):
@@ -189,7 +217,7 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
                     active.get().add(cover)
                     active.dragged = 1
 
-            if ev.type == pygame.MOUSEBUTTONUP and ev.button == 1:
+            if (ev.type == pygame.MOUSEBUTTONUP and ev.button == 1 ):
                 if type(active) == plantloader.Kukorica:
                     active.dragged == 0
                     active.get().kill()
@@ -220,12 +248,15 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
                     buy(mezokeres(active.get().rect.center,kert),active,kert)
                     active = None
 
+                
+                
+
         #kikapálás
 
         for ev in event:
-            if ev.type == pygame.MOUSEBUTTONDOWN and kapa.hover(mouse) and ev.button == 1:
+            if (ev.type == pygame.MOUSEBUTTONDOWN and kapa.hover(mouse) and ev.button == 1) or (active == None and ev.type == pygame.KEYDOWN and ev.key == pygame.K_w):
                 active = kapa
-            if ev.type == pygame.MOUSEBUTTONUP and active == kapa and ev.button == 1:
+            if (ev.type == pygame.MOUSEBUTTONUP and active == kapa and ev.button == 1)  or (active == kapa and ev.type == pygame.KEYUP and ev.key == pygame.K_w):
                 kapal(mezokeres(kapa.rect.center,kert),kert)
                 kapa.visszateres()
                 active = None
@@ -233,9 +264,9 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
 
         for ev in event:
             #kanna kijelölése
-            if ev.type == pygame.MOUSEBUTTONDOWN and kanna.hover(mouse) and ev.button == 1:
+            if (ev.type == pygame.MOUSEBUTTONDOWN and kanna.hover(mouse) and ev.button == 1) or (active == None and ev.type == pygame.KEYDOWN and ev.key == pygame.K_q):
                 active = kanna
-            if ev.type == pygame.MOUSEBUTTONUP and active == kanna and ev.button == 1:
+            if (ev.type == pygame.MOUSEBUTTONUP and active == kanna and ev.button == 1) or (active == kanna and ev.type == pygame.KEYUP and ev.key == pygame.K_q):
                 locsol(mezokeres(kanna.rect.center,kert),kert)
                 kanna.visszateres()
                 active = None
@@ -243,10 +274,12 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
         #aratást lebonyolító rész
         for ev in event:
             #nyisz nyisz kijelölése
-            if ev.type == pygame.MOUSEBUTTONDOWN and nyeso.hover(mouse) and ev.button == 1:
+            if (ev.type == pygame.MOUSEBUTTONDOWN and nyeso.hover(mouse) and ev.button == 1) or (active == None and ev.type == pygame.KEYDOWN and ev.key == pygame.K_e):
                 active = nyeso
-            if ev.type == pygame.MOUSEBUTTONUP and active == nyeso and ev.button == 1:
-                if arat(mezokeres(nyeso.rect.center,kert),kert,actfeladat): actfeladat.eliminate(felemek)
+            if (ev.type == pygame.MOUSEBUTTONUP and active == nyeso and ev.button == 1) or (active == nyeso and ev.type == pygame.KEYUP and ev.key == pygame.K_e):
+                if arat(mezokeres(nyeso.rect.center,kert),kert,actfeladat,pont): 
+                    actfeladat.eliminate(felemek)
+                    timer.add(2)
                 nyeso.visszateres()
                 active = None
 
@@ -254,17 +287,27 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
         if actfeladat.ell(): 
             nehezseg += 1
             timer.add(30)
+            if timer.get() > 100: 
+                nehezseg += 2
+                pont.add(30)
+            if timer.get() > 200:
+                nehezseg += 5
+                pont.add(5*20)
+                
             actfeladat = feladat.ujfeladat(nehezseg)
             actfeladat.eliminate(felemek)
-            print('Új megbízás:')
-            print(actfeladat.map)
 
+        #feladatok frissítése
+
+        actfeladat.elhelyez(felemek,fpanel)
+        
         #aktív objektum egérhez való mozgatása
         try:active.move(mouse)
         except:pass
 
         #kert frissítése
         timer.runTimer(time)
+        if timer.get() <= 0: return pont.get()
         novenyNoves(kert, indexek)
         kert.update(novenykek)
 
@@ -275,6 +318,7 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
         novenykek.draw(display)
         indexek.draw(display)
         display.blit(timer.display.text, timer.display.rect)
+        display.blit(pont.display.text, pont.display.rect)
         cover.draw(display)
 
         #post
@@ -398,13 +442,13 @@ def kapal(pos:tuple,kert:load.Kert):
     if pos == None: return
     kert.get(pos[0],pos[1]).noveny = None
 
-def arat(pos:tuple,kert:load.Kert,task:feladat.Feladat):
+def arat(pos:tuple,kert:load.Kert,task:feladat.Feladat,pont:Pontszam):
     if pos == None:return
     noveny = kert.get(pos[0],pos[1]).noveny
     if noveny == None: return
     if noveny.act != 4: return
 
-    ki = task.eladas(noveny.id)
+    ki = task.eladas(noveny.id,pont)
     kapal(pos,kert)
     return ki
 
