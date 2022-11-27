@@ -174,9 +174,6 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
         bgdisplay.update()
         bgdisplay.draw(display)
 
-        if active == None: pygame.mouse.set_visible(True)
-        else: pygame.mouse.set_visible(False)
-
         #input
         for ev in event:
             if ev.type == pygame.QUIT:
