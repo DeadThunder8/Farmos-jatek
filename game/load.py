@@ -199,9 +199,11 @@ class Boltbutton(pygame.sprite.Sprite):
         return True
 
 class Text():
-    def __init__(self, text:str) -> None:
-        font = pygame.font.SysFont('Calibri', 72, True)
+    def __init__(self, text:str, size=72) -> None:
+        font = pygame.font.SysFont('Calibri', size, True)
         self.text = font.render(text, True, (10,10,10))
+
+        self.textv = text
 
         self.rect = self.text.get_rect()
 

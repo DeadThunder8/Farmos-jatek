@@ -12,10 +12,11 @@ importer()
 
 #modulok betöltése
 import button
-import newgameM
 import scoreboardM
 import gameM
-import creditM
+import fajlkezelo
+import nevbeker
+
 
 def main():
     pygame.init()
@@ -23,6 +24,8 @@ def main():
     #fixinit
     screen = pygame.display.set_mode((1000,600))
     clock = pygame.time.Clock()
+    pygame.display.set_caption('Farmos játék')
+    pygame.display.set_icon(pygame.image.load('./icon.ico'))
 
     #button render
     render = pygame.sprite.Group()
@@ -30,15 +33,11 @@ def main():
     #buttons
     newGame = button.MenuButton(['./mainIMG/newGame.png',250,50],['./mainIMG/newGameHover.png',250,50])
     render.add(newGame.get())
-    newGame.move((40,300))
+    newGame.move((40,390))
 
     scoreboard = button.MenuButton(['./mainIMG/scoreboard.png',250,50],['./mainIMG/scoreboardHover.png',250,50])
     render.add(scoreboard.get())
-    scoreboard.move((40,370))
-
-    credit = button.MenuButton(['./mainIMG/credit.png',250,50],['./mainIMG/creditHover.png',250,50])
-    render.add(credit.get())
-    credit.move((40,440))
+    scoreboard.move((40,450))
 
     exitbutton = button.MenuButton(['./mainIMG/exit.png',250,50],['./mainIMG/exitHover.png',250,50])
     render.add(exitbutton.get())
@@ -46,7 +45,12 @@ def main():
 
     #background
     bg = pygame.image.load('./mainIMG/bg.png')
-   
+
+    #fajlkezeles
+    rendszer = fajlkezelo.Toplista('./scoreboard/eredmeny.txt')
+    rendszer.rendez()
+    rendszer.ment()
+
 
     #gameloop
     isMain = True
@@ -62,10 +66,10 @@ def main():
         screen.blit(bg,(0,0))
 
         #input
-        for x in [newGame,scoreboard,credit,exitbutton]:
+        for x in [newGame,scoreboard,exitbutton]:
             set(render, x, 0)
 
-        for x in [newGame,scoreboard,credit,exitbutton]:
+        for x in [newGame,scoreboard,exitbutton]:
             if x.hover(mouse):
                 set(render,x,1)
 
@@ -75,11 +79,9 @@ def main():
             #menü léptetés
             if ev.type == pygame.MOUSEBUTTONDOWN and ev.button == 1:
                 if newGame.hover(mouse):
-                    print(gameM.main(screen,clock))
+                    rendszer.beszur((gameM.main(screen,clock),nevbeker.main(screen,clock)))
                 if scoreboard.hover(mouse):
-                    scoreboardM.main(screen,clock)
-                if credit.hover(mouse):
-                    creditM.main(screen,clock)
+                    scoreboardM.main(screen,clock,rendszer)
                 if exitbutton.hover(mouse):
                     isMain = False
 

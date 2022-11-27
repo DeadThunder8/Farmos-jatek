@@ -185,6 +185,7 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
             if ev.type == pygame.KEYDOWN:
                 if ev.key == pygame.K_ESCAPE:
                     isMain = False
+                    return pont.get()
         
         # Vásárlást lebonyolító rész
 
