@@ -1,14 +1,9 @@
-#pygame helye
 import pygame
-#könyvtárak betöltése
 import sys
 
-def importer():
-    sys.path.insert(1,'./game/')
-    sys.path.insert(2,'./credit/')
-    sys.path.insert(3,'./scoreboard/')
-
-importer()
+sys.path.insert(1,'./game/')
+sys.path.insert(2,'./credit/')
+sys.path.insert(3,'./scoreboard/')
 
 #modulok betöltése
 import button
@@ -101,4 +96,5 @@ def set(group:pygame.sprite.Group,nev:button.MenuButton,stance:int):
     group.add(nev.get())
 
 
-main()
+if __name__ == "__main__":
+    main()
