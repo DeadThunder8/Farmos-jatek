@@ -96,4 +96,5 @@ def set(group:pygame.sprite.Group,nev:button.MenuButton,stance:int):
     group.add(nev.get())
 
 
-main()
+if __name__ == "__main__":
+    main()
