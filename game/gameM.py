@@ -287,13 +287,15 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
         #feladat frissítés
         if actfeladat.ell(kert):
             nehezseg += 1
-            timer.add(30 * actfeladat.blockCount if actfeladat.blockCount > 0 else 1)
+            timer.add(30)
             if timer.get() > 100: 
                 nehezseg += 2
                 pont.add(30)
+                timer.add(-5)
             if timer.get() > 200:
                 nehezseg += 5
                 pont.add(5*20)
+                timer.add(-5)
                 
             actfeladat = feladat.ujfeladat(nehezseg)
             actfeladat.eliminate(felemek)
