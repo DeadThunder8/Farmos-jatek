@@ -81,6 +81,9 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
     #alsó megjelenítőszint
     render = pygame.sprite.Group()
 
+    # kert megjelenítő szint
+    kertRender = pygame.sprite.Group()
+
     #bolt feletti megjelenítő szint
     belemek = pygame.sprite.Group()
 
@@ -99,7 +102,7 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
 
     #kert létrehozása
     kert = load.Kert(3,3)
-    kert.addall(render)
+    kert.addall(kertRender)
     kert.draw((270,130), 10)
 
     #feladatpanel létrehozása
@@ -282,9 +285,9 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
                 active = None
 
         #feladat frissítés
-        if actfeladat.ell(): 
+        if actfeladat.ell(kert):
             nehezseg += 1
-            timer.add(30)
+            timer.add(30 * actfeladat.blockCount if actfeladat.blockCount > 0 else 1)
             if timer.get() > 100: 
                 nehezseg += 2
                 pont.add(30)
@@ -294,6 +297,7 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
                 
             actfeladat = feladat.ujfeladat(nehezseg)
             actfeladat.eliminate(felemek)
+            kert.shuffle()
 
         #feladatok frissítése
 
@@ -308,9 +312,11 @@ def main(display:pygame.Surface,clock:pygame.time.Clock):
         if timer.get() <= 0: return pont.get()
         novenyNoves(kert, indexek)
         kert.update(novenykek)
+        kert.addall(kertRender)
 
         #rajzolás szintenként
         render.draw(display)
+        kertRender.draw(display)
         belemek.draw(display)
         felemek.draw(display)
         novenykek.draw(display)

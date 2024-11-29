@@ -1,3 +1,5 @@
+from random import shuffle
+
 import pygame
 import plantloader
 
@@ -22,7 +24,7 @@ class BackGround(pygame.sprite.Sprite):
 
 #Kert, parcellák
 class Parcella(pygame.sprite.Sprite):
-    def __init__(self, path,id) -> None:
+    def __init__(self, path, pathBlocked, id) -> None:
         super().__init__()
         self.id = id
         self.image = pygame.Surface([0,0])
@@ -31,7 +33,11 @@ class Parcella(pygame.sprite.Sprite):
 
         self.noveny = None
 
-        try: self.image = pygame.image.load(path)
+        self.blocked:bool = False
+        self.defaultImg = pygame.image.load(path)
+        self.blockedImg = pygame.image.load(pathBlocked)
+
+        try: self.image = self.defaultImg
         except: self.image = pygame.draw.rect(self.image, (255,0,255), [0,0,30,30])
 
         self.planted = 0
@@ -40,13 +46,28 @@ class Parcella(pygame.sprite.Sprite):
     
     def ultet(self, noveny:plantloader.Novenyinit):
         if type(noveny) not in [plantloader.Repa,plantloader.Buza,plantloader.Retek,plantloader.Kukorica,plantloader.Paradicsom]: return None
-        if self.noveny != None:return None
+        if self.noveny is not None or self.blocked:return None
         self.noveny = noveny
         self.noveny.move(self.rect.center)
 
+    def block(self):
+        if self.noveny is not None: return False
+
+        self.blocked = True
+        self.image = self.blockedImg
+        return True
+
+    def unBlock(self):
+        self.blocked = False
+        self.image = self.defaultImg
+
+    def setId(self, newID):
+        self.id = newID
+
 class Kert():
     def __init__(self,sor:int,oszlop:int) -> None:
-        self.sheet = []
+        self.sheet:list[list[Parcella]] = []
+        self.blockOrder:list[Parcella] = []
         self.x = 0
         self.y = 0
         for _ in range(sor):
@@ -54,7 +75,9 @@ class Kert():
         
         for x in range(len(self.sheet)):
             for y in range(oszlop):
-                self.sheet[x].append(Parcella('./game/img/fold.png',(x,y)))
+                actParcella = Parcella('./game/img/fold.png', './game/img/foldBlocked.png' ,(x,y))
+                self.sheet[x].append(actParcella)
+                self.blockOrder.append(actParcella)
 
 
     def update(self, group:pygame.sprite.Group):
@@ -95,6 +118,7 @@ class Kert():
         return None
 
     def addall(self, group:pygame.sprite.Group):
+        group.empty()
         for x in self.sheet:
             for y in x:
                 group.add(y)
@@ -115,7 +139,29 @@ class Kert():
     def hover(self,pos:tuple,loc:tuple):
         if pos[0] < self.get(loc[0],loc[1]).rect.left or pos[0] > self.get(loc[0],loc[1]).rect.right or pos[1] < self.get(loc[0],loc[1]).rect.top or pos[1] > self.get(loc[0],loc[1]).rect.bottom: return False
         return True
-      
+
+    def blockParcella(self, taskAmnt:int, blockCount:int):
+        if taskAmnt == 0: return
+
+        if taskAmnt > 9: taskAmnt = 9
+        blockNumber = (9 - taskAmnt)
+        if blockNumber < blockCount: blockNumber = blockCount
+
+        self.unblockAll()
+
+        for tile in self.blockOrder:
+            if blockNumber == 0: break
+            if tile.block():
+                blockNumber-=1
+
+    def unblockAll(self):
+        for x in self.sheet:
+            for tile in x:
+                tile.unBlock()
+
+    def shuffle(self):
+        shuffle(self.blockOrder)
+
 
 #Panelek
 

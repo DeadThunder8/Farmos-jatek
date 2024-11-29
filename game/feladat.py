@@ -1,3 +1,5 @@
+from random import shuffle
+
 import pygame
 import random
 import plantloader
@@ -31,10 +33,18 @@ class FeladatIkon(pygame.sprite.Sprite):
 
 
 class Feladat():
-    def __init__(self, inp:list[(str,int),(str,int),(str,int)], pont:int) -> None:
+    def __init__(self, inp:list[(str,int),(str,int),(str,int)], pont:int, blockCount) -> None:
         self.score = pont
 
-        self.map = inp
+        act = []
+        for x in inp:
+            for i in range (x[1]):
+                act.append([x[0],1])
+
+        shuffle(act)
+        self.map = act
+
+        self.blockCount = blockCount
 
         self.disply = []
 
@@ -60,7 +70,9 @@ class Feladat():
         
         return False
 
-    def ell(self)->bool:
+    def ell(self, kert:load.Kert)->bool:
+        kert.blockParcella(len(self.map),self.blockCount)
+
         for x in self.map:
             if x[1]<=0:
                 self.map.pop(self.map.index(x))
@@ -145,5 +157,5 @@ def ujfeladat(nehezseg:int)->Feladat:
             if zold == 'paradicsom': actneh+=5
             lista.append([zold,perd])
 
-    return Feladat(lista,actneh)
+    return Feladat(lista,actneh,random.randint(0,3))
 
