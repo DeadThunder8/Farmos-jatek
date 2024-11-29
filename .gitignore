@@ -3,4 +3,6 @@ build
 dist
 __pycache__
 scoreboard/eredmeny.txt
+scoreboard/__pycache__
+game/__pycache__
 main.spec
